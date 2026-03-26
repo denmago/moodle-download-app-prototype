@@ -197,6 +197,16 @@
     .btn-orange:hover { filter: brightness(0.92); }
     .btn-orange img { width: 20px; height: 16px; }
 
+    /* Store availability */
+    .cta-container { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+    .store-availability { display: flex; align-items: center; gap: 12px; }
+    .store-avail-label { font-family: 'Roboto', sans-serif; font-size: 14px; color: #6a737b; white-space: nowrap; line-height: 17.4px; }
+    .store-avail-divider { width: 1px; height: 18px; background: #dee2e6; flex-shrink: 0; }
+    .store-avail-stores { display: flex; align-items: center; gap: 12px; }
+    .store-avail-item { display: flex; align-items: center; gap: 4px; }
+    .store-avail-item span { font-family: 'Roboto', sans-serif; font-size: 14px; color: #6a737b; line-height: 12px; white-space: nowrap; }
+    .store-avail-dot { width: 4px; height: 4px; border-radius: 50%; background: #6a737b; flex-shrink: 0; }
+
     /* Phone visual */
     .hero-visual {
       position: relative; display: flex;
@@ -777,11 +787,30 @@
         <h1>Learn anywhere. Stay connected.</h1>
         <p>Download courses, submit assignments, and study offline, all from your mobile device.</p>
       </div>
-      <a href="#" class="btn-orange" onclick="openModal(); return false;">
-        <img src="assets/cta-lead.svg" alt="" style="width:20px;height:16px;object-fit:contain;" />
-        Download the Moodle app
-        <img src="assets/cta-trail.svg" alt="" style="width:16px;height:16px;object-fit:contain;" />
-      </a>
+      <div class="cta-container">
+        <a href="#" class="btn-orange" onclick="openModal(); return false;">
+          <img src="assets/cta-lead.svg" alt="" style="width:20px;height:16px;object-fit:contain;" />
+          Download the Moodle app
+          <img src="assets/cta-trail.svg" alt="" style="width:16px;height:16px;object-fit:contain;" />
+        </a>
+        <div class="store-availability">
+          <span class="store-avail-label">Available on</span>
+          <div class="store-avail-divider"></div>
+          <div class="store-avail-stores">
+            <div class="store-avail-item">
+              <img src="assets/ios-logo.svg" alt="iOS" width="12" height="14" style="object-fit:contain;" />
+              <span>iOS</span>
+            </div>
+            <div class="store-avail-dot"></div>
+            <div class="store-avail-item">
+              <svg width="10" height="12" viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M33.2 13.1l3.3-5.6c.2-.4.1-.9-.3-1.1-.4-.2-.9-.1-1.1.3l-3.3 5.7c-2.3-1-4.9-1.6-7.8-1.6-2.9 0-5.5.6-7.8 1.6l-3.3-5.7c-.2-.4-.7-.5-1.1-.3-.4.2-.5.7-.3 1.1l3.3 5.6C9.7 15.8 6 20.9 6 26.9V28h36v-1.1c0-6-3.7-11.1-8.8-13.8zM18 24.1c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.7 1.5-1.5 1.5zm12 0c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5-.7 1.5-1.5 1.5zM6 43.2c0 2.2 1.8 4 4 4h2v7c0 1.7 1.3 3 3 3s3-1.3 3-3v-7h12v7c0 1.7 1.3 3 3 3s3-1.3 3-3v-7h2c2.2 0 4-1.8 4-4V29.5H6v13.7zM0 31c0 1.7 1.3 3 3 3s3-1.3 3-3V19c0-1.7-1.3-3-3-3s-3 1.3-3 3v12zm42 0c0 1.7 1.3 3 3 3s3-1.3 3-3V19c0-1.7-1.3-3-3-3s-3 1.3-3 3v12z" fill="#6a737b"/>
+              </svg>
+              <span>Android</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Phone mockup -->
