@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>From Figma to Prototype — Claude Code</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --orange: #f98012;
+      --blue:   #194866;
+      --black:  #282828;
+      --peach:  #ffecdb;
+      --white:  #ffffff;
+      --gray:   #6a737b;
+      --light:  #f8f9fa;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; background: #0e1117; }
+
+    /* ── Deck ── */
+    .deck {
+      width: 100vw; height: 100vh;
+      position: relative;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    /* ── Slides ── */
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 64px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      transform: translateY(20px);
+    }
+    .slide.active {
+      opacity: 1; pointer-events: all;
+      transform: translateY(0);
+    }
+    .slide.exit {
+      opacity: 0; transform: translateY(-20px);
+    }
+
+    /* ── Slide themes ── */
+    .slide-dark  { background: #0e1117; color: #fff; }
+    .slide-white { background: #fff; color: var(--black); }
+    .slide-blue  { background: var(--blue); color: #fff; }
+    .slide-orange { background: var(--orange); color: #fff; }
+    .slide-peach { background: var(--peach); color: var(--black); }
+
+    /* ── Typography ── */
+    .kicker {
+      font-size: 11px; font-weight: 700; letter-spacing: 2.5px;
+      text-transform: uppercase; opacity: 0.55; margin-bottom: 16px;
+    }
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(40px, 5vw, 72px);
+      line-height: 1.1; text-align: center;
+    }
+    h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(28px, 3.5vw, 48px);
+      line-height: 1.15; text-align: center;
+    }
+    .subtitle {
+      font-size: clamp(14px, 1.5vw, 18px);
+      opacity: 0.72; text-align: center; margin-top: 16px;
+      max-width: 560px; line-height: 1.6;
+    }
+
+    /* ── Prompt card ── */
+    .prompt-card {
+      background: #1a1f2e;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-left: 3px solid var(--orange);
+      border-radius: 12px;
+      padding: 20px 24px;
+      max-width: 720px; width: 100%;
+      font-family: 'Roboto Mono', monospace;
+      font-size: clamp(12px, 1.2vw, 14px);
+      line-height: 1.7;
+      color: #e2e8f0;
+      position: relative;
+    }
+    .prompt-card::before {
+      content: '💬 prompt';
+      display: block;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 10px;
+    }
+    .prompt-highlight { color: var(--orange); font-weight: 500; }
+
+    /* ── Result tag ── */
+    .result-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(249,128,18,0.12);
+      border: 1px solid rgba(249,128,18,0.3);
+      color: var(--orange);
+      border-radius: 99px;
+      padding: 6px 14px;
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase;
+      margin-top: 20px;
+    }
+    .result-tag::before { content: '✓'; font-size: 13px; }
+
+    /* ── Step list ── */
+    .steps {
+      display: flex; flex-direction: column; gap: 16px;
+      max-width: 680px; width: 100%;
+    }
+    .step {
+      display: flex; align-items: flex-start; gap: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px; padding: 18px 20px;
+    }
+    .step-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--orange); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; flex-shrink: 0;
+    }
+    .step-body { flex: 1; }
+    .step-title { font-weight: 700; font-size: 15px; margin-bottom: 3px; color: #fff; }
+    .step-desc { font-size: 13px; opacity: 0.6; line-height: 1.5; }
+
+    /* ── Two-col ── */
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 24px; max-width: 880px; width: 100%;
+    }
+    .col-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 28px 24px;
+    }
+    .col-card-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--orange); margin-bottom: 12px;
+    }
+    .col-card p { font-size: 14px; opacity: 0.75; line-height: 1.7; }
+
+    /* ── Stat row ── */
+    .stats {
+      display: flex; gap: 40px; margin-top: 8px;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 56px; color: var(--orange); line-height: 1;
+    }
+    .stat-label { font-size: 13px; opacity: 0.55; margin-top: 4px; }
+
+    /* ── Tag row ── */
+    .tags { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 20px; }
+    .tag {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 99px; padding: 7px 16px;
+      font-size: 13px; font-weight: 600;
+    }
+
+    /* ── Big quote ── */
+    .big-quote {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(22px, 3vw, 40px);
+      text-align: center; line-height: 1.3;
+      max-width: 760px;
+    }
+    .big-quote em { color: var(--orange); font-style: normal; }
+
+    /* ── Phone mini preview ── */
+    .phone-preview {
+      width: 120px; height: 200px;
+      border: 6px solid #000;
+      border-bottom-width: 12px;
+      border-radius: 22px;
+      background: #000;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      flex-shrink: 0;
+    }
+    .phone-screen-preview {
+      width: 100%; height: 100%;
+      background: var(--blue);
+      border-radius: 17px 17px 0 0;
+      overflow: hidden;
+    }
+    .phone-top-bar { height: 12px; background: var(--blue); }
+    .phone-body { background: #fff; padding: 8px 6px; display: flex; flex-direction: column; gap: 5px; }
+    .phone-bar { height: 5px; border-radius: 3px; background: #e9ecef; }
+    .phone-bar-blue { background: var(--blue); width: 60%; }
+    .phone-card-mini { height: 32px; background: var(--peach); border-radius: 6px; }
+
+    /* ── Timeline ── */
+    .timeline { display: flex; flex-direction: column; gap: 0; max-width: 640px; width: 100%; }
+    .tl-item { display: flex; gap: 20px; }
+    .tl-line-wrap { display: flex; flex-direction: column; align-items: center; width: 24px; flex-shrink: 0; }
+    .tl-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--orange); flex-shrink: 0; margin-top: 4px; }
+    .tl-connector { width: 2px; flex: 1; background: rgba(249,128,18,0.25); min-height: 20px; }
+    .tl-content { padding-bottom: 24px; flex: 1; }
+    .tl-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--orange); font-weight: 700; margin-bottom: 4px; }
+    .tl-text { font-size: 14px; opacity: 0.75; line-height: 1.6; }
+
+    /* ── Nav ── */
+    .nav {
+      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 16px;
+      z-index: 100;
+    }
+    .nav-btn {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.2); }
+    .nav-dots { display: flex; gap: 6px; }
+    .nav-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,0.25); cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .nav-dot.active { background: var(--orange); transform: scale(1.4); }
+    .slide-counter {
+      font-size: 12px; color: rgba(255,255,255,0.35);
+      font-family: 'Roboto Mono', monospace;
+      min-width: 40px; text-align: center;
+    }
+
+    /* ── Cover accent ── */
+    .cover-accent {
+      position: absolute; top: -120px; right: -120px;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(249,128,18,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cover-accent-2 {
+      position: absolute; bottom: -80px; left: -80px;
+      width: 400px; height: 400px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(25,72,102,0.4) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── Code inline ── */
+    code {
+      font-family: 'Roboto Mono', monospace;
+      background: rgba(249,128,18,0.15);
+      color: var(--orange);
+      border-radius: 4px; padding: 2px 6px;
+      font-size: 0.9em;
+    }
+
+    /* ── URL pill ── */
+    .url-pill {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 99px; padding: 12px 28px;
+      font-family: 'Roboto Mono', monospace;
+      font-size: clamp(13px, 1.5vw, 16px);
+      color: #fff; margin-top: 16px;
+      display: inline-block;
+    }
+    .url-pill span { color: var(--orange); }
+
+    /* ── Divider ── */
+    .divider {
+      width: 48px; height: 3px; border-radius: 2px;
+      background: var(--orange); margin: 20px auto;
+    }
+
+    /* White slide overrides */
+    .slide-white .step { background: #f8f9fa; border-color: #e9ecef; }
+    .slide-white .step-title { color: var(--black); }
+    .slide-white .step-desc { color: var(--gray); }
+    .slide-white .col-card { background: #f8f9fa; border-color: #e9ecef; }
+    .slide-white .col-card p { color: var(--gray); opacity: 1; }
+    .slide-white .nav-btn { background: rgba(0,0,0,0.06); border-color: rgba(0,0,0,0.1); color: var(--black); }
+    .slide-white .nav-dot { background: rgba(0,0,0,0.15); }
+    .slide-white .nav-dot.active { background: var(--orange); }
+    .slide-white .slide-counter { color: rgba(0,0,0,0.3); }
+
+    /* Blue slide overrides */
+    .slide-blue .tag { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.15); }
+
+    /* Peach slide overrides */
+    .slide-peach .nav-btn { background: rgba(0,0,0,0.08); border-color: rgba(0,0,0,0.12); color: var(--black); }
+    .slide-peach .nav-dot { background: rgba(0,0,0,0.15); }
+    .slide-peach .nav-dot.active { background: var(--blue); }
+    .slide-peach .slide-counter { color: rgba(0,0,0,0.3); }
+    .slide-peach .tl-connector { background: rgba(25,72,102,0.2); }
+    .slide-peach .tl-dot { background: var(--blue); }
+    .slide-peach .tl-label { color: var(--blue); }
+
+    /* Orange slide overrides */
+    .slide-orange .nav-btn { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.25); }
+    .slide-orange .nav-dot { background: rgba(255,255,255,0.3); }
+    .slide-orange .nav-dot.active { background: #fff; }
+    .slide-orange code { background: rgba(255,255,255,0.2); color: #fff; }
+  </style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- ══ SLIDE 1 — Cover ══ -->
+  <div class="slide slide-dark active" data-index="0">
+    <div class="cover-accent"></div>
+    <div class="cover-accent-2"></div>
+    <div class="kicker" style="color:var(--orange);">A designer's experiment</div>
+    <h1>From Figma design<br>to live prototype</h1>
+    <div class="divider"></div>
+    <p class="subtitle">How I used Claude Code to turn a Figma file into a fully working,<br>shareable prototype — with zero developer hand-off.</p>
+    <div class="tags" style="margin-top:32px;">
+      <span class="tag">Claude Code</span>
+      <span class="tag">Figma MCP</span>
+      <span class="tag">HTML/CSS/JS</span>
+      <span class="tag">Cloudflare Tunnel</span>
+      <span class="tag">QR Code</span>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 2 — The problem ══ -->
+  <div class="slide slide-white" data-index="1">
+    <div class="kicker">The starting point</div>
+    <h2>I had a Figma design.<br>I needed a <em style="color:var(--orange);font-style:normal;">real</em> prototype.</h2>
+    <div class="divider"></div>
+    <div class="two-col" style="margin-top:8px;">
+      <div class="col-card">
+        <div class="col-card-title">The challenge</div>
+        <p>A download page for the Moodle app. Needed to feel real enough for user testing — with animations, a QR code, and a mobile bridge page.</p>
+      </div>
+      <div class="col-card">
+        <div class="col-card-title">The constraint</div>
+        <p>No developer available. No hand-off time. Just me, a Figma file, and Claude Code running in my terminal.</p>
+      </div>
+    </div>
+    <div class="stats" style="margin-top:40px;">
+      <div class="stat">
+        <div class="stat-num">1</div>
+        <div class="stat-label">HTML file</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">0</div>
+        <div class="stat-label">developers needed</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">iterations</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3 — How it works ══ -->
+  <div class="slide slide-dark" data-index="2">
+    <div class="kicker">The workflow</div>
+    <h2>Figma MCP → Claude Code → Browser</h2>
+    <div class="divider"></div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Share a Figma URL</div>
+          <div class="step-desc">Claude Code connects directly to Figma via MCP — no exporting, no screenshots. It reads exact tokens, assets, and layout specs.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Describe what you want</div>
+          <div class="step-desc">Plain language prompts. "Make the corners round inside the phone." "Add an entrance animation." "Generate a real QR code."</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Iterate in real time</div>
+          <div class="step-desc">Every change lands in the browser instantly. No build step, no staging environment. Just save and refresh.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 4 — First prompt ══ -->
+  <div class="slide slide-dark" data-index="3">
+    <div class="kicker">Prompt 01 — kickoff</div>
+    <h2>Starting from a Figma link</h2>
+    <div class="divider"></div>
+    <div class="prompt-card">
+      "I will need you to help me testing this prototype for the download page app. First we will need to create a fully functional prototype so users can test it… <span class="prompt-highlight">this is how the design looks overall</span>"<br><br>
+      <span style="opacity:0.45;">— followed by a Figma URL</span>
+    </div>
+    <div class="result-tag">Claude read the Figma file directly — no assets needed from me</div>
+  </div>
+
+  <!-- ══ SLIDE 5 — Fidelity prompt ══ -->
+  <div class="slide slide-dark" data-index="4">
+    <div class="kicker">Prompt 02 — high fidelity</div>
+    <h2>Pushing for pixel accuracy</h2>
+    <div class="divider"></div>
+    <div class="prompt-card">
+      "<span class="prompt-highlight">This looks very different from the design.</span> Which assets do you need so we can make it high fidelity?"
+    </div>
+    <p class="subtitle" style="margin-top:24px;">Claude then fetched exact design tokens from Figma:<br>colours, font families, spacing, border radii — everything.</p>
+    <div class="tags" style="margin-top:20px;">
+      <span class="tag"><code style="background:none;padding:0;color:#f98012;">#f98012</code> orange</span>
+      <span class="tag"><code style="background:none;padding:0;color:#f98012;">#194866</code> blue</span>
+      <span class="tag">DM Serif Display</span>
+      <span class="tag">Open Sans</span>
+      <span class="tag">border: 9.9px solid #000</span>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 6 — Iteration prompts ══ -->
+  <div class="slide slide-blue" data-index="5">
+    <div class="kicker">Prompts 03–08 — iteration</div>
+    <h2>Fixing details, one prompt at a time</h2>
+    <div class="divider"></div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+        <div class="tl-content">
+          <div class="tl-label">Phone corners</div>
+          <div class="tl-text">"The corners should all be inside the phone" → inner screen wrapper with <code>border-radius: 31px; overflow: hidden</code></div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+        <div class="tl-content">
+          <div class="tl-label">Floating cards</div>
+          <div class="tl-text">"For the floating cards let's use these assets" → fetched exact Figma nodes 56:3231, 56:3243, 56:3253</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+        <div class="tl-content">
+          <div class="tl-label">Animation</div>
+          <div class="tl-text">"These cards should have an animation when loading" → <code>@keyframes fadeSlideUp</code> entrance, no continuous float</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-line-wrap"><div class="tl-dot"></div></div>
+        <div class="tl-content">
+          <div class="tl-label">Hero crop</div>
+          <div class="tl-text">"Cut the hero section right below Celebrating Cultures" → <code>height: 660px; overflow: hidden</code></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 7 — Modal prompt ══ -->
+  <div class="slide slide-dark" data-index="6">
+    <div class="kicker">Prompt 09 — modal</div>
+    <h2>Adding the download modal</h2>
+    <div class="divider"></div>
+    <div class="prompt-card">
+      "When the user clicks the CTA, <span class="prompt-highlight">a scrim overlay should appear with a modal</span> where users can scan a QR code… here's the Figma spec"<br><br>
+      <span style="opacity:0.45;">node 56:1143</span>
+    </div>
+    <p class="subtitle" style="margin-top:24px;">Result: animated scrim + modal with fade+slide transition,<br>matching the Figma spec exactly — DM Serif Display 48px title,<br>Open Sans subtitle, 282×268 QR area.</p>
+  </div>
+
+  <!-- ══ SLIDE 8 — QR code ══ -->
+  <div class="slide slide-dark" data-index="7">
+    <div class="kicker">Prompt 10 — real QR code</div>
+    <h2>Making it actually scannable</h2>
+    <div class="divider"></div>
+    <div class="prompt-card">
+      "<span class="prompt-highlight">We need to generate a QR code that brings me to the QR code bridge page.</span> Since we are working at a local level, would it be possible to generate something I can actually scan with my phone?"
+    </div>
+    <div style="display:flex;gap:24px;margin-top:28px;align-items:flex-start;max-width:680px;width:100%;">
+      <div style="flex:1;">
+        <div class="step" style="margin-bottom:12px;">
+          <div class="step-num">1</div>
+          <div class="step-body"><div class="step-title">bridge.html created</div><div class="step-desc">Mobile page matching Figma 56:1384 — detects iOS vs Android, redirects to correct store.</div></div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body"><div class="step-title">QR code generated in JS</div><div class="step-desc"><code>qrcode.js</code> via CDN. URL auto-detects the host so it works locally and live.</div></div>
+        </div>
+      </div>
+      <div class="phone-preview">
+        <div class="phone-screen-preview">
+          <div class="phone-top-bar"></div>
+          <div class="phone-body">
+            <div class="phone-bar phone-bar-blue"></div>
+            <div class="phone-bar" style="width:80%"></div>
+            <div class="phone-card-mini"></div>
+            <div class="phone-bar" style="width:55%"></div>
+            <div class="phone-bar" style="width:70%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 9 — Sharing ══ -->
+  <div class="slide slide-orange" data-index="8">
+    <div class="kicker">Prompt 11 — go live</div>
+    <h2>"Make it work as if it was a real website."</h2>
+    <div class="divider" style="background:#fff;"></div>
+    <p class="subtitle" style="opacity:0.85;">No Netlify disclaimers. No ngrok interstitials.<br>Just a clean URL the team can open on any device.</p>
+    <div class="url-pill"><span>https://</span>sciences-restaurants-imported-floor<span>.trycloudflare.com</span></div>
+    <p class="subtitle" style="margin-top:20px;font-size:13px;opacity:0.65;">
+      Cloudflare Quick Tunnel — one command, zero accounts,<br>no warning pages, HTTPS out of the box.
+    </p>
+  </div>
+
+  <!-- ══ SLIDE 10 — What I learnt ══ -->
+  <div class="slide slide-peach" data-index="9">
+    <div class="kicker" style="color:var(--blue);">What I learnt</div>
+    <h2 style="color:var(--blue);">Designers can ship prototypes<br>without a developer</h2>
+    <div class="divider" style="background:var(--blue);"></div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-line-wrap"><div class="tl-dot" style="background:var(--blue);"></div><div class="tl-connector" style="background:rgba(25,72,102,0.2);"></div></div>
+        <div class="tl-content">
+          <div class="tl-label" style="color:var(--blue);">Figma MCP is a superpower</div>
+          <div class="tl-text" style="color:var(--black);">Claude reads exact tokens and assets from your file. No more "can you export this PNG" conversations.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-line-wrap"><div class="tl-dot" style="background:var(--blue);"></div><div class="tl-connector" style="background:rgba(25,72,102,0.2);"></div></div>
+        <div class="tl-content">
+          <div class="tl-label" style="color:var(--blue);">Specificity beats vagueness</div>
+          <div class="tl-text" style="color:var(--black);">The more precise the prompt ("32px circle, colour F3CEE5, icon 32×32px"), the better the output.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-line-wrap"><div class="tl-dot" style="background:var(--blue);"></div></div>
+        <div class="tl-content">
+          <div class="tl-label" style="color:var(--blue);">Iteration is the process</div>
+          <div class="tl-text" style="color:var(--black);">Don't expect perfection on the first prompt. Treat it like a design critique — give feedback, refine, repeat.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 11 — End ══ -->
+  <div class="slide slide-dark" data-index="10">
+    <div class="cover-accent"></div>
+    <div class="cover-accent-2"></div>
+    <div class="kicker" style="color:var(--orange);">Try it yourself</div>
+    <h1>You don't need to<br>know how to code.</h1>
+    <div class="divider"></div>
+    <p class="subtitle">You just need to know what you want.<br>Claude Code handles the rest.</p>
+    <div class="tags" style="margin-top:32px;">
+      <span class="tag">claude.ai/code</span>
+      <span class="tag">figma.com MCP</span>
+      <span class="tag">cloudflared</span>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- Nav -->
+<div class="nav" id="nav">
+  <button class="nav-btn" id="prev" onclick="go(-1)">←</button>
+  <div class="nav-dots" id="dots"></div>
+  <button class="nav-btn" id="next" onclick="go(1)">→</button>
+  <div class="slide-counter" id="counter"></div>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let current = 0;
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  function updateNav() {
+    document.querySelectorAll('.nav-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + slides.length;
+
+    // Match nav theme to slide
+    const nav = document.getElementById('nav');
+    const theme = slides[current].className;
+    nav.style.cssText = ''; // reset inline
+  }
+
+  function goTo(n) {
+    if (n === current) return;
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit');
+    setTimeout(() => slides[current].classList.remove('exit'), 500);
+    current = n;
+    slides[current].classList.add('active');
+    updateNav();
+  }
+
+  function go(dir) {
+    const next = Math.max(0, Math.min(slides.length - 1, current + dir));
+    goTo(next);
+  }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                     go(-1);
+  });
+
+  updateNav();
+</script>
+</body>
+</html>

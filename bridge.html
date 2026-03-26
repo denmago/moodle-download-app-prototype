@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Download the Moodle App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      font-family: 'Open Sans', sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 40px 32px 36px;
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      margin: 24px;
+    }
+
+    /* Moodle logo */
+    .moodle-logo {
+      width: 120px;
+      height: 32px;
+      object-fit: contain;
+    }
+
+    /* Mini phone mockup */
+    .mini-phone-wrap {
+      position: relative;
+      width: 140px;
+      height: 220px;
+    }
+    .mini-phone-shell {
+      width: 140px;
+      height: 220px;
+      border: 6px solid #000;
+      border-bottom-width: 12px;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #000;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+    .mini-phone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 19px 19px 0 0;
+      overflow: hidden;
+      background: #194866;
+    }
+    .mini-statusbar {
+      background: #194866;
+      height: 14px;
+    }
+    .mini-screen-body {
+      background: #fff;
+      height: calc(100% - 14px);
+      border-radius: 0;
+      padding: 10px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    /* Mini floating cards */
+    .mini-cards {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .mini-fc {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff;
+      border-radius: 8px;
+      padding: 5px 8px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+      white-space: nowrap;
+      opacity: 0;
+    }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .mini-fc-offline {
+      top: 48px; left: -32px;
+      animation: fadeSlideUp 0.4s ease 0.3s forwards;
+    }
+    .mini-fc-assign {
+      top: 120px; right: -32px;
+      animation: fadeSlideUp 0.4s ease 0.6s forwards;
+    }
+    .mini-fc-status {
+      top: calc(50% + 10px); left: -36px;
+      animation: fadeSlideUp 0.4s ease 0.9s forwards;
+    }
+    .mini-fc-icon {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .mini-fc-text {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 8px;
+      font-weight: 600;
+      color: #212529;
+      line-height: 1.2;
+    }
+    .mini-fc-text small {
+      display: block;
+      font-weight: 400;
+      color: #6a737b;
+      font-size: 6px;
+    }
+
+    /* Copy */
+    .bridge-heading {
+      font-family: 'DM Serif Display', serif;
+      font-size: 24px;
+      color: #194866;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .bridge-subtitle {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 16px;
+      color: #212529;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* Continue button */
+    .btn-continue {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #f98012;
+      color: #000;
+      border: none;
+      border-radius: 999px;
+      padding: 14px 32px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .btn-continue:hover { background: #e07010; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <!-- Moodle logo -->
+    <img
+      class="moodle-logo"
+      src="moodle-logo.svg"
+      alt="Moodle"
+    />
+
+    <!-- Mini phone with floating cards -->
+    <div class="mini-phone-wrap">
+      <div class="mini-phone-shell">
+        <div class="mini-phone-screen">
+          <div class="mini-statusbar"></div>
+          <div class="mini-screen-body">
+            <!-- simplified screen content bars -->
+            <div style="height:10px;background:#194866;border-radius:4px;width:70%;"></div>
+            <div style="height:6px;background:#e9ecef;border-radius:4px;width:90%;"></div>
+            <div style="height:6px;background:#e9ecef;border-radius:4px;width:80%;"></div>
+            <div style="height:40px;background:#ffecdb;border-radius:8px;margin-top:4px;"></div>
+            <div style="height:6px;background:#e9ecef;border-radius:4px;width:60%;"></div>
+            <div style="height:6px;background:#e9ecef;border-radius:4px;width:75%;"></div>
+            <div style="height:40px;background:#e9ecef;border-radius:8px;margin-top:4px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating cards -->
+      <div class="mini-cards">
+        <!-- Offline ready -->
+        <div class="mini-fc mini-fc-offline">
+          <div class="mini-fc-icon" style="background:#357a32;">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+              <path d="M2.5 7L5.5 10L11.5 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="mini-fc-text">Offline ready<small>Available offline</small></div>
+        </div>
+
+        <!-- New assignment -->
+        <div class="mini-fc mini-fc-assign">
+          <div class="mini-fc-icon" style="background:#194866;">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+              <rect x="2" y="1" width="10" height="12" rx="1.5" stroke="#fff" stroke-width="1.5"/>
+              <line x1="4.5" y1="5" x2="9.5" y2="5" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
+              <line x1="4.5" y1="7.5" x2="9.5" y2="7.5" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="mini-fc-text">New assignment<small>Due tomorrow</small></div>
+        </div>
+
+        <!-- Assignment status -->
+        <div class="mini-fc mini-fc-status">
+          <div class="mini-fc-icon" style="background:#F3CEE5;">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+              <circle cx="7" cy="5" r="2.5" stroke="#F90086" stroke-width="1.5"/>
+              <path d="M2.5 12c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4" stroke="#F90086" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="mini-fc-text">Assignment status<small>Submitted</small></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Heading + subtitle -->
+    <h1 class="bridge-heading">Download the Moodle app</h1>
+    <p class="bridge-subtitle">We'll take you to the right app store for your device</p>
+
+    <!-- Continue button -->
+    <button class="btn-continue" onclick="handleContinue()">
+      Continue
+    </button>
+  </div>
+
+  <script>
+    function handleContinue() {
+      // Detect device and redirect to appropriate store
+      const ua = navigator.userAgent;
+      if (/android/i.test(ua)) {
+        window.location.href = 'https://play.google.com/store/apps/details?id=com.moodle.moodlemobile';
+      } else if (/iphone|ipad|ipod/i.test(ua)) {
+        window.location.href = 'https://apps.apple.com/app/moodle/id633359593';
+      } else {
+        // Desktop fallback — show both options
+        alert('Open this page on your phone to be redirected to the right app store.');
+      }
+    }
+  </script>
+</body>
+</html>

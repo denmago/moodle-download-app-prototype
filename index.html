@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moodle App – Download</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    /* ── Tokens (exact from Figma) ─────────────────────── */
+    :root {
+      --moodle-orange:  #f98012;
+      --moodle-blue:    #194866;
+      --moodle-black:   #282828;
+      --medium-peach:   #ffecdb;
+      --text-default:   #1d2125;
+      --text-muted:     #6a737b;
+      --text-subtle:    #495057;
+      --border-default: #dee2e6;
+      --border-subtle:  #e9ecef;
+      --gray-200:       #e9ecef;
+      --green:          #357a32;
+      --bg-white:       #ffffff;
+    }
+
+    /* ── Reset ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Open Sans', sans-serif;
+      color: var(--text-default);
+      background: #fff;
+      line-height: 1.6;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+
+    .container { max-width: 1440px; margin: 0 auto; padding: 0 48px; }
+    @media (max-width: 768px) { .container { padding: 0 16px; } }
+
+    /* ════════════════════════════════════════════════
+       NAV
+    ════════════════════════════════════════════════ */
+    .nav-wrap {
+      position: sticky; top: 0; z-index: 100;
+      background: #fff;
+    }
+
+    /* Top bar */
+    .nav-top {
+      height: 62px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px;
+      background: #fff;
+    }
+    .nav-logo img { height: 28px; }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 24px;
+      list-style: none; font-size: 15px;
+      font-family: 'Open Sans', sans-serif; font-weight: 700;
+      color: var(--moodle-blue);
+    }
+    .nav-links a { color: var(--moodle-blue); white-space: nowrap; }
+    .nav-links a:hover { opacity: 0.75; }
+    .nav-links .active-link {
+      border-bottom: 3px solid var(--moodle-orange);
+      padding-bottom: 2px;
+    }
+    .nav-actions { display: flex; align-items: center; gap: 16px; }
+    .nav-actions img { width: 19px; cursor: pointer; }
+    .nav-dots { display: flex; flex-wrap: wrap; width: 19px; gap: 3px; }
+    .nav-dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--moodle-blue); display: block; }
+
+    /* Sub bar */
+    .nav-sub {
+      height: 37px;
+      display: flex; align-items: center; justify-content: flex-end;
+      gap: 16px; padding: 0 48px;
+      background: #fff;
+      box-shadow: 0 4px 7px 0 rgba(49,7,7,0.03);
+      font-size: 12px; color: var(--text-muted);
+      font-family: 'Open Sans', sans-serif;
+    }
+    .nav-sub .divider { width: 1px; height: 20px; background: var(--border-default); }
+    .nav-sub .lang { display: flex; align-items: center; gap: 4px; font-weight: 700; }
+    .nav-sub .chevron { font-size: 8px; }
+    .nav-sub .login { font-size: 14px; color: var(--moodle-blue); }
+    .nav-sub .login:hover { text-decoration: underline; }
+
+    /* Hamburger (mobile) */
+    .nav-hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      width: 26px; cursor: pointer;
+    }
+    .nav-hamburger span { height: 2px; background: var(--moodle-blue); border-radius: 2px; display: block; }
+
+    @media (max-width: 1024px) {
+      .nav-links { gap: 14px; font-size: 13px; }
+    }
+    @media (max-width: 900px) {
+      .nav-links, .nav-sub { display: none; }
+      .nav-hamburger { display: flex; }
+      .nav-top { padding: 0 16px; }
+    }
+
+    /* Mobile drawer */
+    .mobile-drawer {
+      display: none; position: fixed; inset: 0; z-index: 200;
+    }
+    .mobile-drawer.open { display: flex; }
+    .drawer-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); }
+    .drawer-panel {
+      position: absolute; top: 0; left: 0; width: 280px; height: 100%;
+      background: #fff; padding: 20px; overflow-y: auto; z-index: 1;
+    }
+    .drawer-close { text-align: right; margin-bottom: 20px; }
+    .drawer-close button { font-size: 1.5rem; color: var(--text-muted); background: none; border: none; cursor: pointer; }
+    .drawer-links { list-style: none; }
+    .drawer-links li a {
+      display: block; padding: 14px 0;
+      border-bottom: 1px solid var(--border-default);
+      font-size: 15px; font-weight: 700; color: var(--moodle-blue);
+    }
+    .drawer-links li a:hover { color: var(--moodle-orange); }
+
+    /* ════════════════════════════════════════════════
+       HERO
+    ════════════════════════════════════════════════ */
+    .hero {
+      position: relative; overflow: hidden;
+      padding: 100px 48px 0;
+    }
+    @keyframes decorOrange {
+      from { transform: translate(12px, -10px) scale(0.97); opacity: 0; }
+      to   { transform: translate(0, 0) scale(1);            opacity: 1; }
+    }
+    @keyframes decorLeft {
+      from { transform: translate(-12px, 10px) scale(0.97); opacity: 0; }
+      to   { transform: translate(0, 0) scale(1);            opacity: 1; }
+    }
+    @keyframes decorArrow {
+      from { transform: translate(20px, -20px); opacity: 0; }
+      to   { transform: translate(0, 0);         opacity: 0.9; }
+    }
+
+    .hero-decor-orange {
+      position: absolute; top: -150px; right: -80px;
+      width: 600px; height: 600px; pointer-events: none;
+      animation: decorOrange 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .hero-decor-arrow {
+      position: absolute; top: -80px; right: 80px;
+      width: 500px; pointer-events: none;
+      animation: decorArrow 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+    }
+    .hero-decor-left {
+      position: absolute; top: 196px; left: -320px;
+      width: 420px; pointer-events: none;
+      animation: decorLeft 3s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+    }
+
+    .hero-inner {
+      max-width: 1344px; margin: 0 auto;
+      display: grid; grid-template-columns: 576px 1fr;
+      gap: 24px; align-items: start;
+      position: relative; z-index: 1;
+    }
+
+    .hero-copy {
+      padding: 0 40px;
+      display: flex; flex-direction: column; gap: 54px;
+    }
+    .hero-copy-text { display: flex; flex-direction: column; gap: 20px; }
+    .hero-copy h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 60px; line-height: 1.05; font-weight: 400;
+      color: var(--moodle-blue);
+    }
+    .hero-copy p {
+      font-family: 'Roboto', sans-serif; font-weight: 400;
+      font-size: 16px; line-height: 24px;
+      color: var(--text-subtle);
+    }
+    .btn-orange {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--moodle-orange); color: var(--text-default);
+      padding: 12px 16px; border-radius: 24px;
+      font-family: 'Roboto', sans-serif; font-weight: 500;
+      font-size: 14px; letter-spacing: 0.1px; line-height: 20px;
+      border: none; cursor: pointer; text-decoration: none;
+      transition: filter 0.15s;
+      align-self: flex-start;
+    }
+    .btn-orange:hover { filter: brightness(0.92); }
+    .btn-orange img { width: 20px; height: 16px; }
+
+    /* Phone visual */
+    .hero-visual {
+      position: relative; display: flex;
+      justify-content: center; align-items: flex-start;
+      height: 660px; overflow: hidden; padding: 14px;
+    }
+    .phone-wrap {
+      position: relative; width: 394px;
+    }
+    .phone-shell {
+      border: 9.9px solid #000;
+      border-bottom-width: 20px;
+      border-radius: 40px;
+      box-shadow: 0 3.6px 22px rgba(0,0,0,0.61);
+      overflow: hidden;
+      background: #000;
+    }
+    /* inner screen wrapper enforces the inner corner radius */
+    .phone-screen {
+      border-radius: 31px 31px 0 0;
+      overflow: hidden;
+    }
+    .phone-statusbar {
+      background: var(--moodle-blue);
+      height: 27px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 28px;
+    }
+    .phone-statusbar-icons {
+      display: flex; align-items: center; gap: 5px;
+    }
+    .phone-statusbar-icons span {
+      display: block; background: #fff; border-radius: 1px;
+    }
+    .sb-rect  { width: 9px;  height: 9px; border-radius: 1px; }
+    .sb-dot   { width: 9px;  height: 9px; border-radius: 50%; }
+    .sb-tri   { width: 0; height: 0; background: none !important;
+                border-left: 4.5px solid transparent;
+                border-right: 4.5px solid transparent;
+                border-top: 8px solid #fff; border-radius: 0; }
+    .phone-topbar-navy {
+      background: var(--moodle-blue);
+      padding: 17.6px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 26px;
+    }
+    .phone-topbar-navy .app-title {
+      font-family: 'Roboto', sans-serif; font-weight: 500;
+      font-size: 22px; color: #fff; flex: 1;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .phone-topbar-navy img.avatar { width: 39.6px; height: 39.6px; }
+
+    .phone-topbar-white {
+      background: #fff;
+      padding: 17.6px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .phone-topbar-white .courses-title {
+      font-family: 'Roboto', sans-serif; font-weight: 400;
+      font-size: 26px; line-height: 1.2; color: var(--text-default);
+      flex: 1;
+    }
+    .phone-topbar-white img.dl-icon { width: 25px; }
+
+    .phone-content { background: #fff; padding: 17.6px; display: flex; flex-direction: column; gap: 13.2px; overflow: hidden; }
+
+    .app-searchbar {
+      background: #fff; border: 1.1px solid var(--border-default);
+      border-radius: 4px; padding: 8.8px 17.6px;
+      display: flex; align-items: center; gap: 17.6px;
+      font-family: 'Roboto', sans-serif; font-size: 17.6px;
+      color: var(--text-muted);
+    }
+    .app-searchbar img { width: 17.6px; }
+
+    .app-filter-row {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .app-filter-dropdown {
+      border: 1.1px solid var(--border-default); border-radius: 4px;
+      padding: 8.8px 17.6px; display: flex; align-items: center; gap: 4.4px;
+      font-family: 'Roboto', sans-serif; font-weight: 500;
+      font-size: 15.4px; letter-spacing: 0.84px; text-transform: uppercase;
+      color: var(--text-default);
+    }
+    .app-filter-dropdown img { width: 17.6px; }
+    .app-filter-icons { display: flex; gap: 17.6px; align-items: center; }
+    .app-filter-icons img { width: 25px; }
+
+    .course-card {
+      background: #fff; border: 1.1px solid var(--border-default);
+      border-radius: 12px; padding: 13.2px 17.6px;
+      display: flex; align-items: center; gap: 8.8px; overflow: hidden;
+    }
+    .course-thumb {
+      width: 66px; height: 66px; border-radius: 8px;
+      flex-shrink: 0; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .course-thumb.placeholder {
+      font-family: 'Roboto', sans-serif; font-weight: 700;
+      font-size: 13px; color: #fff;
+    }
+    .course-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8.8px; }
+    .course-row { display: flex; align-items: flex-start; gap: 4.4px; }
+    .course-name {
+      flex: 1;
+      font-family: 'Roboto', sans-serif; font-size: 17.6px;
+      line-height: 1.2; color: var(--text-default);
+    }
+    .course-dots { width: 26px; height: 26px; color: var(--text-muted); font-size: 1.2rem; text-align: center; }
+    .course-tag {
+      background: var(--medium-peach); border-radius: 27px;
+      padding: 4.4px 8.8px;
+      font-family: 'Roboto', sans-serif; font-size: 13.2px;
+      color: #51140d; letter-spacing: 0.25px; white-space: nowrap;
+      align-self: flex-start;
+    }
+    .progress-wrap { display: flex; align-items: center; gap: 4.4px; }
+    .progress-track {
+      flex: 1; height: 8.8px; background: var(--medium-peach);
+      border-radius: 8px; position: relative; overflow: hidden;
+    }
+    .progress-fill {
+      position: absolute; left: 0; top: 0; height: 100%;
+      background: var(--moodle-orange); border-radius: 8px;
+    }
+    .progress-pct {
+      font-family: 'Roboto', sans-serif; font-size: 15.4px;
+      color: var(--text-muted); text-align: right;
+    }
+
+    /* Floating tooltip cards */
+    .phone-tooltips { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+
+    /* shared card base */
+    .fc {
+      position: absolute;
+      display: flex; align-items: center; gap: 11px;
+      box-shadow: 0 5.6px 5.6px rgba(0,0,0,0.25);
+      white-space: nowrap;
+      opacity: 0;
+    }
+    .fc-icon {
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .fc-title {
+      font-family: 'Roboto', sans-serif; font-size: 20px;
+      line-height: 1.2; overflow: hidden; text-overflow: ellipsis;
+    }
+    .fc-sub {
+      font-family: 'Roboto', sans-serif; font-size: 16px;
+      color: #6c757d;
+    }
+
+    /* Offline ready */
+    .fc-offline {
+      background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) 100%),
+                  linear-gradient(90deg, #357a32 0%, #357a32 100%);
+      border: 1.4px solid #357a32;
+      border-radius: 14.4px; padding: 17px 29px;
+      top: 90px; left: -50px;
+      animation: fadeSlideUp 0.5s ease 0.3s forwards;
+    }
+    .fc-offline .fc-icon { background: #d4edda; width: 48px; height: 48px; }
+    .fc-offline .fc-title { color: #691911; }
+
+    /* New assignment */
+    .fc-assignment {
+      background: #cfe2f2;
+      border: 1.41px solid #0f6cbf;
+      border-radius: 13.9px; padding: 17px 29px;
+      top: 220px; right: -40px;
+      animation: fadeSlideUp 0.5s ease 0.6s forwards;
+    }
+    .fc-assignment .fc-icon { background: #acd7fb; width: 60px; height: 60px; }
+    .fc-assignment .fc-title { color: #282828; }
+
+    /* Assignment status */
+    .fc-status {
+      background: #f9e4f0;
+      border: 1.42px solid #f90086;
+      border-radius: 14.6px; padding: 17px 29px;
+      top: calc(50% - 7px); left: -50px;
+      animation: fadeSlideUp 0.5s ease 0.9s forwards;
+    }
+    .fc-status .fc-icon { width: 48px; height: 48px; border-radius: 50%; background: #F3CEE5; }
+    .fc-status .fc-icon img { width: 32px; height: 32px; object-fit: contain; }
+    .fc-status .fc-title { color: #51140d; }
+    .fc-badge {
+      background: #357a32; border-radius: 24px;
+      padding: 2px 10px; display: inline-block;
+      font-family: 'Roboto', sans-serif; font-weight: 700;
+      font-size: 14px; color: #fff; line-height: 1.4;
+      margin-top: 4px;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @media (max-width: 1100px) {
+      .hero { padding: 60px 48px 60px; }
+      .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+      .hero-copy h1 { font-size: 48px; }
+      .hero-visual { height: 500px; }
+      .phone-wrap { width: 300px; }
+      .phone-tooltips { display: none; }
+    }
+    @media (max-width: 768px) {
+      .hero { padding: 40px 16px 40px; min-height: auto; }
+      .hero-copy { padding: 0; gap: 32px; }
+      .hero-copy h1 { font-size: 2.2rem; }
+      .hero-visual { height: auto; }
+      .phone-wrap { width: 260px; }
+      .hero-decor-orange, .hero-decor-arrow, .hero-decor-left { display: none; }
+    }
+
+    /* ════════════════════════════════════════════════
+       FEATURES
+    ════════════════════════════════════════════════ */
+    .features {
+      background: var(--medium-peach);
+      padding: 100px 48px;
+    }
+    .features-header {
+      text-align: center; margin-bottom: 48px;
+    }
+    .features-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 54px; line-height: 1.05; font-weight: 400;
+      color: var(--moodle-blue); margin-bottom: 16px;
+    }
+    .features-header p {
+      font-family: 'Open Sans', sans-serif; font-size: 16px; line-height: 1.6;
+      color: var(--text-default);
+    }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 32px; max-width: 1344px; margin: 0 auto;
+    }
+    .feature-card {
+      background: #fff; border: 1.8px solid var(--border-default);
+      border-radius: 14px; padding: 32px;
+      display: flex; flex-direction: column; gap: 16px;
+      transition: box-shadow 0.2s;
+    }
+    .feature-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+    .feature-icon {
+      width: 64px; height: 64px; border-radius: 999px;
+      background: var(--moodle-orange);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .feature-icon img { width: 24px; height: 24px; }
+    .feature-card h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 24px; line-height: 28px; font-weight: 400;
+      color: var(--moodle-blue);
+    }
+    .feature-card p {
+      font-family: 'Open Sans', sans-serif; font-size: 16px; line-height: 25.6px;
+      color: var(--text-default);
+    }
+
+    @media (max-width: 900px) {
+      .features { padding: 60px 16px; }
+      .features-header h2 { font-size: 36px; }
+      .features-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ════════════════════════════════════════════════
+       INSTITUTIONS
+    ════════════════════════════════════════════════ */
+    .institutions-section {
+      background: #fff;
+      padding: 32px 48px;
+    }
+    .institutions-card {
+      background: var(--moodle-blue);
+      border: 1px solid var(--border-default);
+      border-radius: 12px; padding: 24px;
+      display: flex; flex-direction: column; gap: 16px;
+      max-width: 1344px; margin: 0 auto;
+    }
+    .inst-badge {
+      display: flex; align-items: center; gap: 4px;
+    }
+    .inst-badge img { width: 24px; }
+    .inst-badge span {
+      font-family: 'Open Sans', sans-serif; font-weight: 700;
+      font-size: 16px; color: var(--moodle-orange);
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .institutions-card h2 {
+      font-family: 'Open Sans', sans-serif; font-weight: 700;
+      font-size: 32px; line-height: normal;
+      color: #fff;
+    }
+    .inst-checklist { list-style: none; display: flex; flex-direction: column; gap: 0; }
+    .inst-checklist li {
+      display: flex; align-items: center; gap: 16px;
+      font-family: 'Open Sans', sans-serif; font-size: 24px;
+      color: #fff; padding: 4px 0;
+    }
+    .check-mark {
+      font-family: 'Georgia', serif; /* unicode checkmark */
+      color: var(--moodle-orange); font-size: 20px; width: 30px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-white-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid #fff; color: #fff;
+      padding: 12px 16px; border-radius: 24px;
+      font-family: 'Roboto', sans-serif; font-weight: 500;
+      font-size: 14px; letter-spacing: 0.1px;
+      cursor: pointer; text-decoration: none;
+      background: transparent;
+      transition: background 0.15s;
+      align-self: flex-start;
+    }
+    .btn-white-outline:hover { background: rgba(255,255,255,0.1); }
+    .btn-white-outline img { width: 16px; }
+
+    @media (max-width: 768px) {
+      .institutions-section { padding: 16px; }
+      .institutions-card h2 { font-size: 24px; }
+      .inst-checklist li { font-size: 16px; }
+    }
+
+    /* ════════════════════════════════════════════════
+       DOWNLOADS
+    ════════════════════════════════════════════════ */
+    .downloads-section {
+      background: #fff;
+      padding: 32px 48px;
+    }
+    .downloads-card {
+      background: var(--gray-200);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px; padding: 24px;
+      max-width: 1344px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .downloads-card h2 {
+      font-family: 'Open Sans', sans-serif; font-weight: 700;
+      font-size: 32px; line-height: normal;
+      color: var(--moodle-black);
+    }
+    .store-buttons {
+      display: flex; gap: 16px; flex-wrap: wrap;
+    }
+    .store-btn {
+      background: #fff; border: 1.28px solid var(--border-subtle);
+      border-radius: 10.25px; padding: 10.25px 15.37px;
+      display: flex; align-items: center; gap: 10.25px;
+      min-width: 187px; cursor: pointer; text-decoration: none;
+      color: var(--moodle-black);
+      transition: box-shadow 0.15s, border-color 0.15s;
+    }
+    .store-btn:hover { border-color: var(--moodle-orange); box-shadow: 0 4px 12px rgba(249,128,18,0.2); }
+    .store-btn-icon { flex-shrink: 0; display: flex; align-items: center; }
+    .store-btn-icon img { width: 29px; }
+    .store-btn-text { display: flex; flex-direction: column; }
+    .store-btn-text .label {
+      font-family: 'Roboto', sans-serif; font-weight: 600; font-size: 15.2px; line-height: 20.2px;
+    }
+    .store-btn-text .sublabel {
+      font-family: 'Roboto', sans-serif; font-weight: 400; font-size: 15.2px; line-height: 20.2px;
+    }
+
+    @media (max-width: 768px) {
+      .downloads-section { padding: 16px; }
+      .store-buttons { flex-direction: column; }
+      .store-btn { width: 100%; }
+    }
+
+    /* ════════════════════════════════════════════════
+       FOOTER (image)
+    ════════════════════════════════════════════════ */
+    .footer-img {
+      width: 100%; display: block;
+      object-fit: cover;
+    }
+
+    /* ════════════════════════════════════════════════
+       MOBILE STICKY CTA
+    ════════════════════════════════════════════════ */
+    .mobile-cta {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+      background: #fff; border-top: 1px solid var(--border-default);
+      padding: 12px 16px;
+    }
+    .mobile-cta .btn-orange { width: 100%; justify-content: center; border-radius: 24px; align-self: auto; }
+    @media (max-width: 768px) { .mobile-cta { display: block; } }
+    @media (max-width: 768px) { .footer-img { margin-bottom: 68px; } }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 80px; right: 20px; z-index: 999;
+      background: var(--moodle-blue); color: #fff;
+      padding: 12px 20px; border-radius: 8px;
+      font-size: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      opacity: 0; transform: translateY(10px);
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none; font-family: 'Open Sans', sans-serif;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    @media (min-width: 769px) { .toast { bottom: 20px; } }
+
+    /* ════════════════════════════════════════════════
+       MODAL
+    ════════════════════════════════════════════════ */
+    .scrim {
+      display: none;
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.5);
+      align-items: center; justify-content: center;
+      padding: 24px;
+      opacity: 0; transition: opacity 0.25s ease;
+    }
+    .scrim.open { display: flex; }
+    .scrim.visible { opacity: 1; }
+
+    .modal {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 16px 24px rgba(0,0,0,0.14),
+                  0 6px 30px rgba(0,0,0,0.12),
+                  0 8px 10px rgba(0,0,0,0.2);
+      width: 100%; max-width: 540px;
+      display: flex; flex-direction: column;
+      transform: translateY(24px); transition: transform 0.25s ease;
+    }
+    .scrim.visible .modal { transform: translateY(0); }
+
+    .modal-content {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 16px;
+      padding: 40px 48px 8px;
+    }
+    .modal-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 48px; line-height: 1.5; font-weight: 400;
+      color: var(--moodle-blue); text-align: center;
+      letter-spacing: 0.15px;
+    }
+    .modal-subtitle {
+      font-family: 'Open Sans', sans-serif; font-weight: 600;
+      font-size: 24px; line-height: 1.5;
+      color: var(--moodle-blue); text-align: center;
+      letter-spacing: 0.25px; max-width: 397px;
+    }
+    .modal-qr {
+      width: 282px; height: 282px;
+      background: #fff; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 8px;
+      font-family: 'Open Sans', sans-serif; font-size: 13px;
+      color: rgba(255,255,255,0.5); letter-spacing: 0.3px;
+    }
+    .modal-actions {
+      display: flex; align-items: center; justify-content: flex-end;
+      gap: 8px; padding: 16px 24px 8px;
+    }
+    .modal-cancel {
+      font-family: 'Roboto', sans-serif; font-weight: 500;
+      font-size: 14px; line-height: 20px; letter-spacing: 0.1px;
+      color: #343a40; padding: 12px 16px;
+      border-radius: 4px; background: none; border: none;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .modal-cancel:hover { background: var(--border-subtle); }
+
+    @media (max-width: 600px) {
+      .modal-content { padding: 32px 24px 8px; }
+      .modal-title { font-size: 32px; }
+      .modal-subtitle { font-size: 18px; }
+      .modal-qr { width: 220px; height: 220px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════
+     NAV
+════════════════════════════════════════════════ -->
+<div class="nav-wrap">
+  <nav class="nav-top" aria-label="Main navigation">
+    <!-- Logo -->
+    <a href="#" class="nav-logo" aria-label="Moodle home">
+      <img src="assets/nav-logo.svg" alt="Moodle" />
+    </a>
+
+    <!-- Desktop nav links -->
+    <ul class="nav-links">
+      <li><a href="#">Forums</a></li>
+      <li><a href="#">Documentation</a></li>
+      <li><a href="#">Plugins</a></li>
+      <li><a href="#" class="active-link">Downloads</a></li>
+      <li><a href="#">Demo</a></li>
+      <li><a href="#">Development</a></li>
+      <li><a href="#">Translation</a></li>
+      <li><a href="#">Tracker</a></li>
+    </ul>
+
+    <!-- Actions -->
+    <div class="nav-actions">
+      <img src="assets/nav-search.svg" alt="Search" title="Search" />
+      <div class="nav-dots" aria-hidden="true">
+        <span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+      </div>
+      <!-- Mobile hamburger -->
+      <div class="nav-hamburger" onclick="openDrawer()" role="button" tabindex="0" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Sub utility bar (desktop) -->
+  <div class="nav-sub" aria-label="Utility navigation">
+    <span class="lang">
+      English (United States)(en_us)
+      <span class="chevron">▾</span>
+    </span>
+    <span class="divider"></span>
+    <a href="#" class="login" onclick="showToast('Login page coming soon…'); return false;">Log in</a>
+  </div>
+</div>
+
+<!-- Mobile drawer -->
+<div class="mobile-drawer" id="mobileDrawer" role="dialog" aria-label="Navigation menu">
+  <div class="drawer-overlay" onclick="closeDrawer()"></div>
+  <div class="drawer-panel">
+    <div class="drawer-close">
+      <button onclick="closeDrawer()" aria-label="Close menu">×</button>
+    </div>
+    <ul class="drawer-links">
+      <li><a href="#">Forums</a></li>
+      <li><a href="#">Documentation</a></li>
+      <li><a href="#">Plugins</a></li>
+      <li><a href="#" style="color:var(--moodle-orange)">Downloads</a></li>
+      <li><a href="#">Demo</a></li>
+      <li><a href="#">Development</a></li>
+      <li><a href="#">Translation</a></li>
+      <li><a href="#">Tracker</a></li>
+      <li><a href="#" onclick="closeDrawer(); showToast('Login page coming soon…'); return false;">Log in</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════ -->
+<section class="hero" aria-label="Hero">
+  <!-- Decorative assets -->
+  <img class="hero-decor-orange" src="assets/hero-orange.svg" alt="" aria-hidden="true" />
+  <img class="hero-decor-arrow" src="assets/hero-arrow.svg" alt="" aria-hidden="true" />
+  <img class="hero-decor-left" src="assets/hero-left.svg" alt="" aria-hidden="true" />
+
+  <div class="hero-inner">
+    <!-- Copy -->
+    <div class="hero-copy">
+      <div class="hero-copy-text">
+        <h1>Learn without limits</h1>
+        <p>Download courses, submit assignments, and study offline, all from your phone</p>
+      </div>
+      <a href="#" class="btn-orange" onclick="openModal(); return false;">
+        <img src="assets/cta-lead.svg" alt="" style="width:20px;height:16px;object-fit:contain;" />
+        Get the Moodle App
+        <img src="assets/cta-trail.svg" alt="" style="width:16px;height:16px;object-fit:contain;" />
+      </a>
+    </div>
+
+    <!-- Phone mockup -->
+    <div class="hero-visual">
+      <div class="phone-wrap">
+        <div class="phone-shell">
+          <div class="phone-screen">
+          <!-- System bar -->
+          <div class="phone-statusbar" aria-hidden="true">
+            <div class="phone-statusbar-icons">
+              <span class="sb-rect"></span>
+              <span class="sb-dot"></span>
+              <span class="sb-tri"></span>
+            </div>
+          </div>
+
+          <!-- Top bar: Mount Orange -->
+          <div class="phone-topbar-navy">
+            <span class="app-title">Mount Orange</span>
+            <img class="avatar" src="assets/phone-avatar.png" alt="User avatar" style="border-radius:9999px;object-fit:cover;" />
+          </div>
+
+          <!-- Top bar: My courses -->
+          <div class="phone-topbar-white">
+            <span class="courses-title">My courses</span>
+            <img class="dl-icon" src="assets/phone-cloud-download.svg" alt="Download" />
+          </div>
+
+          <!-- Content -->
+          <div class="phone-content">
+            <!-- Search -->
+            <div class="app-searchbar">
+              <img src="assets/phone-search.svg" alt="Search" />
+              Filter my courses
+            </div>
+
+            <!-- Filter row -->
+            <div class="app-filter-row">
+              <div class="app-filter-dropdown">
+                All
+                <img src="assets/phone-chevron.svg" alt="▾" />
+              </div>
+              <div class="app-filter-icons">
+                <img src="assets/phone-sort.svg" alt="Sort" />
+                <img src="assets/phone-grid.svg" alt="Grid" />
+              </div>
+            </div>
+
+            <!-- Course card 1 -->
+            <div class="course-card">
+              <div class="course-thumb placeholder" style="background:#6ea8d0;">A1/A2</div>
+              <div class="course-info">
+                <div class="course-row">
+                  <span class="course-name">A1/A2 English with H5P</span>
+                  <span class="course-dots">⋮</span>
+                </div>
+                <span class="course-tag">English as a Foreign Language</span>
+              </div>
+            </div>
+
+            <!-- Course card 2 -->
+            <div class="course-card">
+              <div class="course-thumb placeholder" style="background:#5a9e6f;">MCC</div>
+              <div class="course-info">
+                <div class="course-row">
+                  <span class="course-name">Mindful course creation</span>
+                  <span class="course-dots">⋮</span>
+                </div>
+                <span class="course-tag">Faculty of Education</span>
+                <div class="progress-wrap">
+                  <div class="progress-track"><div class="progress-fill" style="width:50%"></div></div>
+                  <span class="progress-pct">50%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Course card 3 -->
+            <div class="course-card">
+              <div class="course-thumb placeholder" style="background:#a67c52;">CC</div>
+              <div class="course-info">
+                <div class="course-row">
+                  <span class="course-name">Celebrating cultures</span>
+                  <span class="course-dots">⋮</span>
+                </div>
+                <span class="course-tag">Our Community</span>
+                <div class="progress-wrap">
+                  <div class="progress-track"><div class="progress-fill" style="width:27%"></div></div>
+                  <span class="progress-pct">27%</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          </div><!-- /phone-screen -->
+        </div><!-- /phone-shell -->
+
+        <!-- Floating tooltip cards -->
+        <div class="phone-tooltips" aria-hidden="true">
+
+          <!-- Offline ready -->
+          <div class="fc fc-offline">
+            <div class="fc-icon">
+              <svg viewBox="0 0 448 512" width="22" height="22" fill="#357a32">
+                <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="fc-title">Offline ready</div>
+              <div class="fc-sub">Learn anywhere</div>
+            </div>
+          </div>
+
+          <!-- New assignment -->
+          <div class="fc fc-assignment">
+            <div class="fc-icon">
+              <img src="assets/fc-bell.svg" alt="" style="width:28px;" />
+            </div>
+            <div>
+              <div class="fc-title">New assignment</div>
+              <div class="fc-sub">Due tomorrow</div>
+            </div>
+          </div>
+
+          <!-- Assignment status -->
+          <div class="fc fc-status">
+            <div class="fc-icon">
+              <img src="assets/fc-assignment-stroke.svg" alt="" />
+            </div>
+            <div>
+              <div class="fc-title">Assigment status</div>
+              <div class="fc-badge">Submitted for grading</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     FEATURES
+════════════════════════════════════════════════ -->
+<section class="features" aria-labelledby="features-title">
+  <div class="features-header">
+    <h2 id="features-title">Everything you need to keep learning</h2>
+    <p>The Moodle app gives you everything you need to stay connected and on top of your learning-</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <img src="assets/feat-wifi.svg" alt="" />
+      </div>
+      <h3>Learn offline</h3>
+      <p>Access offline and download entire courses or individual items and keep studying anywhere.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <img src="assets/feat-chart.svg" alt="" />
+      </div>
+      <h3>Track your progress</h3>
+      <p>Check your grades and upcoming deadlines directly from your device.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <img src="assets/feat-mobile.svg" alt="" style="width:31px;height:31px;" />
+      </div>
+      <h3>Do more on the go</h3>
+      <p>Submit assignments, attempt quizzes, and join forum discussions from anywhere.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     FOR INSTITUTIONS
+════════════════════════════════════════════════ -->
+<section class="institutions-section" aria-labelledby="inst-title">
+  <div class="institutions-card">
+    <div class="inst-badge">
+      <img src="assets/inst-wifi.svg" alt="" />
+      <span>For Institutions</span>
+    </div>
+    <h2 id="inst-title">Make your LMS mobile</h2>
+    <ul class="inst-checklist">
+      <li>
+        <span class="check-mark">✓</span>
+        Brande Moodle App with your logo &amp; colors
+      </li>
+      <li>
+        <span class="check-mark">✓</span>
+        Offline training for remote teams
+      </li>
+      <li>
+        <span class="check-mark">✓</span>
+        Enterprise support &amp; deployment
+      </li>
+    </ul>
+    <a href="#" class="btn-white-outline" onclick="showToast('Redirecting to Moodle App plans…'); return false;">
+      See Moodle App plans
+      <img src="assets/inst-arrow.svg" alt="" />
+    </a>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     DOWNLOAD OPTIONS
+════════════════════════════════════════════════ -->
+<section class="downloads-section" id="downloads" aria-labelledby="dl-title">
+  <div class="downloads-card">
+    <h2 id="dl-title">All download options</h2>
+    <div class="store-buttons">
+
+      <!-- iOS -->
+      <a href="#" class="store-btn" onclick="showToast('Opening App Store…'); return false;" aria-label="iOS App – App Store">
+        <div class="store-btn-icon">
+          <img src="assets/store-apple.svg" alt="Apple" style="width:22.7px;height:27.9px;" />
+        </div>
+        <div class="store-btn-text">
+          <span class="label">iOS App</span>
+          <span class="sublabel">App Store</span>
+        </div>
+      </a>
+
+      <!-- Android -->
+      <a href="#" class="store-btn" onclick="showToast('Opening Google Play…'); return false;" aria-label="Android App – Google Play">
+        <div class="store-btn-icon">
+          <img src="assets/store-google.svg" alt="Google Play" style="width:29px;height:32.5px;" />
+        </div>
+        <div class="store-btn-text">
+          <span class="label">Android App</span>
+          <span class="sublabel">Google Play</span>
+        </div>
+      </a>
+
+      <!-- Direct APK -->
+      <a href="#" class="store-btn" onclick="showToast('Starting APK download…'); return false;" aria-label="Direct APK – Android 4.0+">
+        <div class="store-btn-icon">
+          <img src="assets/store-download.svg" alt="Download" style="width:24px;height:24px;" />
+        </div>
+        <div class="store-btn-text">
+          <span class="label">Direct APK</span>
+          <span class="sublabel">Android 4.0+</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     FOOTER (Figma image asset)
+════════════════════════════════════════════════ -->
+<footer aria-label="Site footer">
+  <img class="footer-img" src="assets/footer.png" alt="Moodle footer" />
+</footer>
+
+<!-- Mobile sticky CTA -->
+<div class="mobile-cta" id="mobileCta">
+  <a href="#" class="btn-orange" onclick="openModal(); return false;">
+    <img src="assets/cta-lead.svg" alt="" />
+    Get The Moodle App
+    <img src="assets/cta-trail.svg" alt="" style="width:16px;height:16px;" />
+  </a>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     MODAL — Scan to download
+════════════════════════════════════════════════ -->
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="modal-title" onclick="handleScrimClick(event)">
+  <div class="modal">
+    <div class="modal-content">
+      <h2 class="modal-title" id="modal-title">Scan to download</h2>
+      <p class="modal-subtitle">Open your phone's camera and point it at the QR code</p>
+      <div class="modal-qr" id="qr-code" aria-label="QR code"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+  /* Mobile drawer */
+  function openDrawer() {
+    document.getElementById('mobileDrawer').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    document.getElementById('mobileDrawer').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeDrawer(); closeModal(); }
+  });
+
+  /* QR Code — generated once on page load */
+  (function() {
+    const bridgeUrl = window.location.origin + '/bridge.html';
+    const container = document.getElementById('qr-code');
+    new QRCode(container, {
+      text: bridgeUrl,
+      width: 256,
+      height: 256,
+      colorDark: '#000',
+      colorLight: '#fff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+    // Remove inline size so our CSS controls the box
+    const canvas = container.querySelector('canvas');
+    if (canvas) { canvas.style.width = '100%'; canvas.style.height = '100%'; }
+  })();
+
+  /* Modal */
+  function openModal() {
+    const scrim = document.getElementById('scrim');
+    scrim.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => requestAnimationFrame(() => scrim.classList.add('visible')));
+  }
+  function closeModal() {
+    const scrim = document.getElementById('scrim');
+    scrim.classList.remove('visible');
+    document.body.style.overflow = '';
+    setTimeout(() => scrim.classList.remove('open'), 250);
+  }
+  function handleScrimClick(e) {
+    if (e.target === e.currentTarget) closeModal();
+  }
+
+  /* Toast */
+  let t;
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(t);
+    t = setTimeout(() => el.classList.remove('show'), 2500);
+  }
+
+  /* Smooth scroll */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    const href = a.getAttribute('href');
+    if (href === '#') return;
+    a.addEventListener('click', e => {
+      const target = document.querySelector(href);
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); closeDrawer(); }
+    });
+  });
+
+  /* Hide mobile CTA when downloads is visible */
+  const cta = document.getElementById('mobileCta');
+  const dlSection = document.getElementById('downloads');
+  if (cta && dlSection && 'IntersectionObserver' in window) {
+    new IntersectionObserver(entries => {
+      cta.style.display = entries[0].isIntersecting ? 'none' : '';
+    }, { threshold: 0.1 }).observe(dlSection);
+  }
+</script>
+</body>
+</html>
