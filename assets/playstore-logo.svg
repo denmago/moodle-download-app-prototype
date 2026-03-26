@@ -1,0 +1,27 @@
+<svg width="13" height="14" viewBox="0 0 12.717 14.001" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Blue: left main triangle -->
+  <g transform="translate(0, 0.18)">
+    <path d="M0.255087 0.0400881C0.0934012 0.207268 0 0.46785 0 0.80535V12.8431C0 13.1806 0.0941861 13.4412 0.255087 13.6092L0.295117 13.6453L7.11968 6.90233V6.743L0.295117 5.82324e-05L0.255087 0.0400881Z" fill="url(#blue_grad)"/>
+  </g>
+  <!-- Green: top right -->
+  <g transform="translate(0.26, 0)">
+    <path d="M9.19029 4.70018L1.14523 0.181606C0.671156 -0.0813306 0.255167 -0.0491502 8.00242e-05 0.216141L6.86468 6.99911L9.19029 4.70018Z" fill="#00F076"/>
+  </g>
+  <!-- Yellow/orange: right middle -->
+  <g transform="translate(7.12, 4.67)">
+    <path d="M2.27235 4.6568L0.000106444 2.40811V2.24878L2.2747 8.27098e-05L2.32572 0.0299087L5.02023 1.54473C5.78941 1.97485 5.78941 2.68203 5.02023 3.11529L2.32572 4.62776L2.27235 4.6568Z" fill="#FF9C00"/>
+  </g>
+  <!-- Red/pink: bottom -->
+  <g transform="translate(0.26, 7)">
+    <path d="M9.19023 2.29893L6.86462 0L2.20509e-05 6.78532C0.255109 7.05061 0.671883 7.0828 1.14517 6.81672L9.19023 2.29893Z" fill="#FF3A44"/>
+  </g>
+  <defs>
+    <linearGradient id="blue_grad" x1="6.48157" y1="12.9715" x2="-2.64659" y2="3.7519" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00A1FF"/>
+      <stop offset="0.26" stop-color="#00BEFF"/>
+      <stop offset="0.51" stop-color="#00D2FF"/>
+      <stop offset="0.76" stop-color="#00DFFF"/>
+      <stop offset="1" stop-color="#00E3FF"/>
+    </linearGradient>
+  </defs>
+</svg>
