@@ -1082,7 +1082,8 @@
 
   /* QR Code — generated once on page load */
   (function() {
-    const bridgeUrl = window.location.origin + '/bridge.html';
+    const base = window.location.href.replace(/\/[^/]*$/, '/');
+    const bridgeUrl = base + 'bridge.html';
     const container = document.getElementById('qr-code');
     new QRCode(container, {
       text: bridgeUrl,
