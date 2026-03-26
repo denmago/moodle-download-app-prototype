@@ -610,10 +610,12 @@
       display: none;
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
       background: #fff; border-top: 1px solid var(--border-default);
-      padding: 12px 16px;
+      padding: 16px;
+      flex-direction: column; align-items: center; gap: 10px;
     }
     .mobile-cta .btn-orange { width: 100%; justify-content: center; border-radius: 24px; align-self: auto; }
-    @media (max-width: 768px) { .mobile-cta { display: block; } }
+    .mobile-cta .store-availability { justify-content: center; }
+    @media (max-width: 768px) { .mobile-cta { display: flex; } }
     @media (max-width: 768px) { .footer-img { margin-bottom: 68px; } }
 
     /* Toast */
@@ -1070,9 +1072,24 @@
 <div class="mobile-cta" id="mobileCta">
   <a href="#" class="btn-orange" onclick="openModal(); return false;">
     <img src="assets/cta-lead.svg" alt="" />
-    Get The Moodle App
+    Download the Moodle app
     <img src="assets/cta-trail.svg" alt="" style="width:16px;height:16px;" />
   </a>
+  <div class="store-availability">
+    <span class="store-avail-label">Available on</span>
+    <div class="store-avail-divider"></div>
+    <div class="store-avail-stores">
+      <div class="store-avail-item">
+        <img src="assets/ios-logo.svg" alt="iOS" width="12" height="14" style="object-fit:contain;" />
+        <span>iOS</span>
+      </div>
+      <div class="store-avail-dot"></div>
+      <div class="store-avail-item">
+        <img src="assets/playstore-logo.svg" alt="Android" width="13" height="14" style="object-fit:contain;" />
+        <span>Android</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ════════════════════════════════════════════════
